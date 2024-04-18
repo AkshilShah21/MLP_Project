@@ -15,17 +15,11 @@ class TimingCallback(tf.keras.callbacks.Callback):
     def on_epoch_end(self, epoch, logs={}):
         self.logs.append(timer()-self.starttime)
 
-
-def get_var_name(var):
-    for name, value in globals().items():
-        if value is var:
-            return name
-
-def train_model(model, dataset_name, train_data, epochs, batch_size, validation_data):
+def train_model(model, model_name, dataset_name, train_data, epochs, batch_size, validation_data):
     cb = TimingCallback()
     history = model.fit(train_data, epochs=epochs, batch_size=batch_size, validation_data=validation_data, callbacks = [cb])
-    with open(f"logs/{get_var_name(model)}_{dataset_name}.txt", "a") as f:
-        print(f"total time taken in training:- {(sum(cb.logs))}", file=f)
+    with open(f"logs/totaltime.txt", "a") as f:
+        print(f"total time taken in training Model ({model_name}) dataset({dataset_name}):- {(sum(cb.logs))}", file=f)
     return model, history
 
 def main():
@@ -83,11 +77,12 @@ def main():
     cnn_svm_model = cnn_svm.compiled_cnn_svm(cnn_svm.build_cnn_svm_model(input_shape, num_classes), 1e-3)
 
     # Train CNN models
-    epochs = 200
-    cnn_softmax_model, softmax_history = train_model(cnn_softmax_model, dataset_name, ds_train, epochs, batch_size=128, validation_data = ds_test)
-    cnn_svm_model, svm_history = train_model(cnn_svm_model, dataset_name, ds_train, epochs, batch_size=128, validation_data = ds_test)
+    epochs = 2
+    cnn_softmax_model, softmax_history = train_model(cnn_softmax_model, 'cnn_softmax_model', dataset_name, ds_train, epochs, batch_size=128, validation_data = ds_test)
+    cnn_svm_model, svm_history = train_model(cnn_svm_model, 'cnn_svm_model', dataset_name, ds_train, epochs, batch_size=128, validation_data = ds_test)
 
     # Plot comparison
+    fig = plt.figure() 
     plt.plot(softmax_history.history['accuracy'], label='CNN-Softmax')
     plt.plot(svm_history.history['accuracy'], label='CNN-SVM')
     plt.xlabel('Epochs')
@@ -95,8 +90,10 @@ def main():
     plt.title(f'Accuracy Comparison for {dataset_name}')
     plt.legend()
     plt.savefig(f"figures/{dataset_name}_accuracy.jpg")
-    plt.show()
+    plt.show(block=False)
+    fig.show()
 
+    fig = plt.figure() 
     plt.plot(softmax_history.history['loss'], label='CNN-Softmax')
     plt.plot(svm_history.history['loss'], label='CNN-SVM')
     plt.xlabel('Epochs')
@@ -104,7 +101,9 @@ def main():
     plt.title(f'Loss Comparison for {dataset_name}')
     plt.legend()
     plt.savefig(f"figures/{dataset_name}_loss.jpg")
-    plt.show()
+    plt.show(block=False)
+    fig.show()
+
 
 
 if __name__ == "__main__":
