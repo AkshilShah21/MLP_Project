@@ -2,7 +2,7 @@
 
 import os
 import numpy as np
-from model import cnn_softmax, cnn_svm
+from Models import cnn_softmax, cnn_svm
 from sklearn.model_selection import GridSearchCV
 from sklearn.svm import SVC
 import matplotlib.pyplot as plt
