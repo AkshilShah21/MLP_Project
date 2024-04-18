@@ -54,7 +54,7 @@ Arguments:
 Then, go to the repository's directory, and run the `main.py` module as per the desired parameters.
 ```bash
 cd cnn-svm
-python3 main.py --model 2 --dataset ./MNIST_data --penalty_parameter 1 --checkpoint_path ./checkpoint --log_path ./logs
+python3  TensorFlow: 2.16.1     main.py --model 2 --dataset ./MNIST_data --penalty_parameter 1 --checkpoint_path ./checkpoint --log_path ./logs
 ```
 
 ## Results
