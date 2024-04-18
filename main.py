@@ -5,8 +5,27 @@ import matplotlib.pyplot as plt
 from Models import cnn_softmax, cnn_svm
 from Data_Preprocessing import preprocess
 
-def train_model(model, train_data, epochs, batch_size, validation_data):
-    history = model.fit(train_data, epochs=epochs, batch_size=batch_size, validation_data=validation_data)
+from timeit import default_timer as timer
+
+class TimingCallback(tf.keras.callbacks.Callback):
+    def __init__(self, logs={}):
+        self.logs=[]
+    def on_epoch_begin(self, epoch, logs={}):
+        self.starttime = timer()
+    def on_epoch_end(self, epoch, logs={}):
+        self.logs.append(timer()-self.starttime)
+
+
+def get_var_name(var):
+    for name, value in globals().items():
+        if value is var:
+            return name
+
+def train_model(model, dataset_name, train_data, epochs, batch_size, validation_data):
+    cb = TimingCallback()
+    history = model.fit(train_data, epochs=epochs, batch_size=batch_size, validation_data=validation_data, callbacks = [cb])
+    with open(f"logs/{get_var_name(model)}_{dataset_name}.txt", "a") as f:
+        print(f"total time taken in training:- {(sum(cb.logs))}", file=f)
     return model, history
 
 def main():
@@ -65,8 +84,8 @@ def main():
 
     # Train CNN models
     epochs = 200
-    cnn_softmax_model, softmax_history = train_model(cnn_softmax_model, ds_train, epochs, batch_size=128, validation_data = ds_test)
-    cnn_svm_model, svm_history = train_model(cnn_svm_model, ds_train, epochs, batch_size=128, validation_data = ds_test)
+    cnn_softmax_model, softmax_history = train_model(cnn_softmax_model, dataset_name, ds_train, epochs, batch_size=128, validation_data = ds_test)
+    cnn_svm_model, svm_history = train_model(cnn_svm_model, dataset_name, ds_train, epochs, batch_size=128, validation_data = ds_test)
 
     # Plot comparison
     plt.plot(softmax_history.history['accuracy'], label='CNN-Softmax')
