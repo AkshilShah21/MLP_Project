@@ -25,21 +25,15 @@ def main():
         # Load and preprocess dataset
         if dataset_option == 1:
             (ds_train, ds_test), ds_info = tfds.load('mnist',split=['train', 'test'], shuffle_files=True, as_supervised=True, with_info=True,)
+            dataset_name = 'MINST'
         else:
             (ds_train, ds_test), ds_info = tfds.load('fashion_mnist',split=['train', 'test'], shuffle_files=True, as_supervised=True, with_info=True,)
-
+            dataset_name = 'MINST'
        
 
-        ds_train = ds_train.map(preprocess.normalize_img, num_parallel_calls=tf.data.AUTOTUNE)
-        ds_train = ds_train.cache()
-        ds_train = ds_train.shuffle(ds_info.splits['train'].num_examples)
-        ds_train = ds_train.batch(128)
-        ds_train = ds_train.prefetch(tf.data.AUTOTUNE)
-
-        ds_test = ds_test.map(preprocess.normalize_img, num_parallel_calls=tf.data.AUTOTUNE)
-        ds_test = ds_test.batch(128)
-        ds_test = ds_test.cache()
-        ds_test = ds_test.prefetch(tf.data.AUTOTUNE)
+        #PREPROCESS
+        ds_train = preprocess.preprocess_train(ds_train, ds_info)
+        ds_test = preprocess.preprocess_test(ds_test)
 
         # Build CNN models
         input_shape=(28, 28, 1)  
@@ -57,14 +51,29 @@ def main():
         print("CNN-Softmax:", softmax_history.history)
         print("CNN-SVM:", svm_history.history)
 
-        # # Plot accuracy comparison
-        # plt.plot(softmax_history.history['val_accuracy'], label='CNN-Softmax Accuracy')
-        # plt.plot(svm_history.history['val_accuracy'], label='CNN-SVM Accuracy')
-        # plt.xlabel('Epochs')
-        # plt.ylabel('Accuracy')
-        # plt.title('Accuracy Comparison')
-        # plt.legend()
-        # plt.show()
+        # Plot comparison
+        fig = plt.figure() 
+        plt.plot(softmax_history.history['accuracy'], label='CNN-Softmax')
+        plt.plot(svm_history.history['accuracy'], label='CNN-SVM')
+        plt.xlabel('Epochs')
+        plt.ylabel('Accuracy')
+        plt.title(f'Accuracy Comparison for {dataset_name}')
+        plt.legend()
+        plt.savefig(f"figures/{dataset_name}_accuracy.jpg")
+        plt.show()
+        fig.show()
+
+        fig = plt.figure() 
+        plt.plot(softmax_history.history['loss'], label='CNN-Softmax')
+        plt.plot(svm_history.history['loss'], label='CNN-SVM')
+        plt.xlabel('Epochs')
+        plt.ylabel('Accuracy')
+        plt.title(f'Loss Comparison for {dataset_name}')
+        plt.legend()
+        plt.savefig(f"figures/{dataset_name}_loss.jpg")
+        plt.show()
+        fig.show()
+
 
 if __name__ == "__main__":
     main()
