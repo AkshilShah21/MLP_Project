@@ -1,5 +1,4 @@
 import tensorflow as tf
-from tensorflow import keras
 
 def build_cnn_softmax_model(input_shape, num_classes):
 

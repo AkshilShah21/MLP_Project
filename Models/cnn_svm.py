@@ -1,7 +1,13 @@
 import tensorflow as tf
+from tensorflow import keras
 
 def build_cnn_svm_model(input_shape, num_classes):
     
+    if num_classes == 2:
+        activation = 'linear'
+    else:
+        activation = 'softmax'
+
     model = tf.keras.models.Sequential()
     layers = tf.keras.layers
 
@@ -32,10 +38,10 @@ def build_cnn_svm_model(input_shape, num_classes):
     model.add(layers.Dropout(rate=5e-1))  
 
     # FC 2 or Output layer
-    model.add(layers.Dense(num_classes, kernel_regularizer=tf.keras.regularizers.l2(0.01), activation='softmax'))
-
+    model.add(layers.Dense(units = num_classes, kernel_regularizer=tf.keras.regularizers.l2(0.01), activation=activation))
+    
     return model
     
 def compiled_cnn_svm(model, alpha):
-    model.compile(optimizer = tf.optimizers.legacy.Adam(learning_rate= alpha), loss = 'squared_hinge', metrics = ['accuracy'])
+    model.compile(optimizer = tf.optimizers.Adam(learning_rate= alpha), loss = 'squared_hinge', metrics = ['accuracy'])
     return model
