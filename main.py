@@ -15,12 +15,18 @@ class TimingCallback(tf.keras.callbacks.Callback):
     def on_epoch_end(self, epoch, logs={}):
         self.logs.append(timer()-self.starttime)
 
-def train_model(model, model_name, dataset_name, train_data, epochs, batch_size, validation_data):
+def train_model(model, model_name, dataset_name, train_data, epochs, batch_size):
     cb = TimingCallback()
-    history = model.fit(train_data, epochs=epochs, batch_size=batch_size, validation_data=validation_data, callbacks = [cb])
+    history = model.fit(train_data, epochs=epochs, batch_size=batch_size, callbacks = [cb])
     with open(f"logs/totaltime.txt", "a") as f:
         print(f"total time taken in training Model ({model_name}) dataset({dataset_name}):- {(sum(cb.logs))}", file=f)
     return model, history
+
+def evaluate_model(model, model_name, dataset_name, test_data):
+    results = model.evaluate(test_data, batch_size=128)
+    with open(f"logs/totaltime.txt", "a") as f:
+        print(f"test loss, test acc for Model ({model_name}) dataset({dataset_name}): ", results, file=f)
+    return results
 
 def main():
     print(f"access of tensorflow for hardware:\n{tf.config.list_physical_devices()}")
@@ -58,16 +64,20 @@ def main():
 
     elif dataset_option == 3:
         dataset_name = 'Dogs vs cat'
-        ds_train, ds_info = tfds.load('cats_vs_dogs', split='train', shuffle_files=True, as_supervised=True, with_info=True)
+        
+        ds_split, ds_info = tfds.load("penguins/cats_vs_dogs", split=['train[:20%]', 'train[20%:]'], shuffle_files=True, as_supervised=True, with_info=True)
+        ds_test = ds_split[0]
+        ds_train = ds_split[1]  
 
         #preprocess
         ds_train = ds_train.map(preprocess.image_resize, num_parallel_calls=tf.data.AUTOTUNE)
         ds_train = preprocess.preprocess_train(ds_train, ds_info, True)
-        ds_test = None
+
+        ds_test = ds_test.map(preprocess.image_resize, num_parallel_calls=tf.data.AUTOTUNE)
+        ds_test = preprocess.preprocess_train(ds_test, ds_info, True)
 
         input_shape=(32, 32, 3)  
         num_classes = 2
-
 
     else:
         print('invalid input')
@@ -77,9 +87,9 @@ def main():
     cnn_svm_model = cnn_svm.compiled_cnn_svm(cnn_svm.build_cnn_svm_model(input_shape, num_classes), 1e-3)
 
     # Train CNN models
-    epochs = 2
-    cnn_softmax_model, softmax_history = train_model(cnn_softmax_model, 'cnn_softmax_model', dataset_name, ds_train, epochs, batch_size=128, validation_data = ds_test)
-    cnn_svm_model, svm_history = train_model(cnn_svm_model, 'cnn_svm_model', dataset_name, ds_train, epochs, batch_size=128, validation_data = ds_test)
+    epochs = 100
+    cnn_softmax_model, softmax_history = train_model(cnn_softmax_model, 'cnn_softmax_model', dataset_name, ds_train, epochs, batch_size=128)
+    cnn_svm_model, svm_history = train_model(cnn_svm_model, 'cnn_svm_model', dataset_name, ds_train, epochs, batch_size=128)
 
     # Plot comparison
     fig = plt.figure() 
@@ -104,6 +114,9 @@ def main():
     plt.show(block=False)
     fig.show()
 
+    #evalulate 
+    cnn_softmax_model_result = evaluate_model(cnn_softmax_model,'cnn_softmax_model', dataset_name, ds_train)
+    cnn_svm_model_result = evaluate_model(cnn_svm_model, 'cnn_svm_model', dataset_name, ds_train)
 
 
 if __name__ == "__main__":

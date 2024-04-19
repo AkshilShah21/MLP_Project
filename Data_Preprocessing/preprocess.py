@@ -21,8 +21,12 @@ def preprocess_train(ds_train, ds_info, binary = False):
     ds_train = ds_train.prefetch(tf.data.AUTOTUNE)
     return ds_train
 
-def preprocess_test(ds_test):
-    ds_test = ds_test.map(normalize_img, num_parallel_calls=tf.data.AUTOTUNE)
+def preprocess_test(ds_test, binary = False):
+    if binary:
+        ds_test = ds_test.map(normalize_img_binary, num_parallel_calls=tf.data.AUTOTUNE)
+    else: 
+        ds_test = ds_test.map(normalize_img, num_parallel_calls=tf.data.AUTOTUNE)
+        
     ds_test = ds_test.batch(128)
     ds_test = ds_test.cache()
     ds_test = ds_test.prefetch(tf.data.AUTOTUNE)
