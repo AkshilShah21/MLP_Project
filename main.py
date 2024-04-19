@@ -65,7 +65,7 @@ def main():
     elif dataset_option == 3:
         dataset_name = 'Dogs vs cat'
         
-        ds_split, ds_info = tfds.load("penguins/cats_vs_dogs", split=['train[:20%]', 'train[20%:]'], shuffle_files=True, as_supervised=True, with_info=True)
+        ds_split, ds_info = tfds.load("cats_vs_dogs", split=['train[:20%]', 'train[20%:]'], shuffle_files=True, as_supervised=True, with_info=True)
         ds_test = ds_split[0]
         ds_train = ds_split[1]  
 

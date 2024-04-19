@@ -1,0 +1,12 @@
+total time taken in training Model (cnn_softmax_model) dataset(MINST):- 1859.8843792060943
+total time taken in training Model (cnn_svm_model) dataset(MINST):- 1809.2239701309154
+test loss, test acc for Model (cnn_softmax_model) dataset(MINST):  [0.0004304272588342428, 0.999916672706604]
+test loss, test acc for Model (cnn_svm_model) dataset(MINST):  [0.9029719233512878, 0.9983166456222534]
+total time taken in training Model (cnn_softmax_model) dataset(Fashion-MINST):- 1854.7106405429804
+total time taken in training Model (cnn_svm_model) dataset(Fashion-MINST):- 1881.6867184989533
+test loss, test acc for Model (cnn_softmax_model) dataset(Fashion-MINST):  [0.0013988058781251311, 0.9995666742324829]
+test loss, test acc for Model (cnn_svm_model) dataset(Fashion-MINST):  [0.9078078269958496, 0.988016664981842]
+total time taken in training Model (cnn_softmax_model) dataset(Dogs vs cat):- 760.6013199599402
+total time taken in training Model (cnn_svm_model) dataset(Dogs vs cat):- 761.1643667549943
+test loss, test acc for Model (cnn_softmax_model) dataset(Dogs vs cat):  [0.0020367505494505167, 0.9995701313018799]
+test loss, test acc for Model (cnn_svm_model) dataset(Dogs vs cat):  [0.010218518786132336, 0.9999462366104126]
