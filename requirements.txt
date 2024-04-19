@@ -1,0 +1,11 @@
+keras==3.2.1
+matplotlib-inline==0.1.6
+numpy==1.26.4
+tensorboard==2.16.2
+tensorboard-data-server==0.7.2
+tensorflow==2.16.1
+tensorflow-datasets==4.9.4
+tensorflow-io-gcs-filesystem==0.36.0
+tensorflow-macos==2.16.1
+tensorflow-metadata==1.14.0
+tensorflow-metal==1.1.0
